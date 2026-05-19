@@ -32,8 +32,8 @@ An enterprise-grade CI/CD quality gate developed as a Master's Thesis Project. T
 
 **1. Clone the repository**
 ```bash
-git clone [https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git)
-cd YOUR_REPOSITORY_NAME
+git clone [https://github.com/Sree-bee/ai-quality-gate.git](https://github.com/Sree-bee/ai-quality-gate.git)
+cd ai-quality-gate
 ```
 **2. Create a Virtual Environment**
 ```bash
