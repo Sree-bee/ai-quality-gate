@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Project Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .dashboard-header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 2rem 0; border-radius: 0 0 15px 15px; margin-bottom: 2rem; }
+        .card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .score-text { font-size: 3rem; font-weight: bold; }
+        .high-risk-text { color: #dc3545; }
+        .low-risk-text { color: #198754; }
+        .coupling-badge { font-size: 0.85rem; padding: 0.4em 0.6em; }
+    </style> -->
+<style>
+    /* Global Premium Dark Theme */
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); /* Deep Slate gradient */
+        color: #f8fafc;
+        min-height: 100vh;
+    }
+
+    /* Make all code blocks look professional */
+    code, pre {
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Elevate the Dashboard Cards (Glassmorphism effect) */
+    .card {
+        background-color: rgba(30, 41, 59, 0.7) !important;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    /* Interactive hover effect for clickable cards/files */
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Neon Accents for Risk Levels */
+    .text-danger { color: #ef4444 !important; text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); }
+    .text-success { color: #10b981 !important; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+    .text-warning { color: #f59e0b !important; text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+
+    /* Modernize Tables */
+    .table { color: #cbd5e1; }
+    .table-hover tbody tr:hover { background-color: rgba(255, 255, 255, 0.05) !important; color: white; }
+    .table-dark th { background-color: #0f172a; border-bottom: 2px solid #334155; }
+    
+    /* Sleek buttons */
+    .btn-dark {
+        background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+        border: 1px solid #475569;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .btn-dark:hover {
+        background: #0f172a;
+        border-color: #64748b;
+    }
+/* --- NEW FIX: Force all headings and card text to be light --- */
+    h1, h2, h3, h4, h5, h6, .card-title, .card-text {
+        color: #f8fafc !important; 
+    }
+    
+    /* Ensure muted text is light enough to read on dark backgrounds */
+    .text-muted {
+        color: #94a3b8 !important; 
+    }
+/* --- THE ULTIMATE DARK MODE PATCH --- */
+
+    /* 1. Force big numbers, standard paragraphs, and spans to be bright white */
+    body, p, span, div, .display-1, .display-2, .display-3, .display-4, .display-5, .display-6 {
+        color: #f8fafc !important;
+    }
+
+    /* 2. Bring back the Quality Score Circle backgrounds */
+    .bg-danger { background-color: #ef4444 !important; color: white !important; }
+    .bg-success { background-color: #10b981 !important; color: white !important; }
+    .bg-warning { background-color: #f59e0b !important; color: white !important; }
+
+    /* 3. Fix the Source Code Preview Text */
+    pre {
+        color: #a5b4fc !important; /* Soft developer blue */
+        background-color: #020617 !important; /* Ultra dark background for contrast */
+        border: 1px solid #334155 !important;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    code {
+        color: #e2e8f0 !important;
+    }
+
+    /* 4. Fix the bright white Alert boxes */
+    .alert {
+        background-color: rgba(0, 0, 0, 0.4) !important;
+        color: #f8fafc !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+/* --- FINAL UI POLISH --- */
+
+    /* 1. Rebuild the Quality Score Circle (Lost from old styles) */
+    .rounded-circle {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 130px;
+        height: 130px;
+        margin: 0 auto 1rem auto;
+        font-size: 1.8rem !important;
+        font-weight: 800;
+        color: #ffffff !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        border: 4px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Add deep, premium gradients to the circles */
+    .bg-danger.rounded-circle { background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%) !important; }
+    .bg-success.rounded-circle { background: linear-gradient(135deg, #10b981 0%, #065f46 100%) !important; }
+
+    /* Make sure loose text inside that card is white */
+    .card-body h1, .card-body h2, .card-body h3, .card-body h4 {
+        color: #f8fafc !important;
+    }
+
+    /* 2. Fix the Bug Localization Table Rows */
+    .table-danger, .table-danger > th, .table-danger > td {
+        background-color: rgba(220, 38, 38, 0.25) !important; /* Dark translucent red */
+        color: #f8fafc !important;
+        border-bottom-color: rgba(220, 38, 38, 0.4) !important;
+    }
+    .table-success, .table-success > th, .table-success > td {
+        background-color: rgba(16, 185, 129, 0.2) !important; /* Dark translucent green */
+        color: #f8fafc !important;
+        border-bottom-color: rgba(16, 185, 129, 0.4) !important;
+    }
+
+    /* 3. Make the Function Names pop */
+    .table code {
+        color: #fbbf24 !important; /* Bright gold/yellow */
+        font-weight: bold;
+        background: rgba(0, 0, 0, 0.3) !important;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+    }
+</style>
+</head>
+<body>
+
+<div class="container-fluid dashboard-header text-center">
+    <h1>📁 Multi-File Project Analysis</h1>
+    <p class="lead">Repository-Wide AI Risk & Dependency Mapping</p>
+</div>
+
+<div class="container pb-5">
+    <div class="mb-4">
+        <a href="/" class="btn btn-outline-secondary">&larr; Upload New Project</a>
+    </div>
+
+    <div class="row text-center mb-4">
+        <div class="col-md-6">
+            <div class="card p-4 h-100 border-top border-primary border-4">
+                <h5 class="text-muted">Total Files Scanned</h5>
+                <div class="score-text text-primary mt-2">{{ file_count }}</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-4 h-100 border-top {% if avg_risk > 25 %}border-danger{% else %}border-success{% endif %} border-4">
+                <h5 class="text-muted">Average Project Risk</h5>
+                <div class="score-text {% if avg_risk > 25 %}high-risk-text{% else %}low-risk-text{% endif %} mt-2">
+                    {{ avg_risk }}%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card p-4">
+                <h4>🗄️ Repository File Breakdown</h4>
+                <p class="text-muted small">Select a file to view detailed Explainable AI (XAI) diagnostics and localized code analysis.</p>
+                
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>File Name</th>
+                                <th>Size (LOC)</th>
+                                <th>Complexity</th>
+                                <th>Fan-In / Fan-Out</th>
+                                <th>ML Score</th>
+                                <th>System Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in project_results %}
+                            <tr class="{% if file.risk_score > 25 %}table-danger{% else %}table-success{% endif %}">
+                                <td><strong>{{ file.filename }}</strong></td>
+                                <td>{{ file.loc }}</td>
+                                <td>{{ file.complexity }}</td>
+                                <td>
+                                    <span class="badge bg-secondary coupling-badge" title="Fan-In">{{ file.fan_in }}</span> / 
+                                    <span class="badge bg-secondary coupling-badge" title="Fan-Out">{{ file.fan_out }}</span>
+                                </td>
+                                <td><strong>{{ file.risk_score }}%</strong></td>
+                               <td>
+                                    {% if file.risk_score > 25 %}
+                                        <span class="badge bg-danger">🔴 High Risk</span>
+                                    {% else %}
+                                        <span class="badge bg-success">🟢 Safe</span>
+                                    {% endif %}
+                                    
+                                    {% if file.coupling_warning %}
+                                        <span class="badge bg-warning ms-1">⚠️ Coupling</span>
+                                    {% endif %}
+                                    
+                                    {% if file.infected_by %}
+                                        <span class="badge bg-warning ms-1" title="Imports high-risk files: {{ file.infected_by | join(', ') }}">
+                                            ☣️ Risk Propagated
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/file/{{ file.filepath }}" class="btn btn-sm btn-dark w-100">Inspect ➡️</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
